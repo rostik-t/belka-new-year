@@ -462,15 +462,36 @@
     async function fetchPexelsPhotos(query, count) {
   const key = decodePexKey(window.__PEX_KK__);
   if (!key) throw new Error("Pex key is missing (not injected).");
+      
+function randInt(min, maxInclusive) {
+  return Math.floor(Math.random() * (maxInclusive - min + 1)) + min;
+}
+
+function shuffleInPlace(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+async function fetchPexelsPool(query, poolSize = 60) {
+  // page тоже рандомизируем (обычно 1..10 достаточно)
+  const page = randInt(1, 8);
 
   const url = new URL("https://api.pexels.com/v1/search");
   url.searchParams.set("query", query);
-  url.searchParams.set("per_page", String(Math.min(count, 15)));
-  url.searchParams.set("orientation", "landscape"); // чтобы фотки были горизонтальные
+  url.searchParams.set("per_page", String(Math.min(Math.max(poolSize, 15), 80)));
+  url.searchParams.set("page", String(page));
+  url.searchParams.set("orientation", "landscape");
   url.searchParams.set("size", "large");
+
+  // Чтобы не попасть в странный кеш по URL, добавим мусорный параметр
+  url.searchParams.set("_", String(Date.now()) + String(Math.random()).slice(2));
 
   const res = await fetch(url.toString(), {
     headers: { Authorization: key },
+    cache: "no-store",
   });
 
   if (!res.ok) {
@@ -479,56 +500,75 @@
   }
 
   const data = await res.json();
-  return (data.photos ?? []).slice(0, count);
+  return data.photos ?? [];
 }
 
 function setImgSafe(img, src) {
   if (!img) return;
   img.loading = "lazy";
   img.decoding = "async";
-  img.referrerPolicy = "no-referrer"; // на всякий случай
+  img.referrerPolicy = "no-referrer";
   img.src = src;
 }
 
 async function fillGallery() {
-  // Можно менять запросы — они реально влияют на тематичность
+  const imgIds = ["ph0", "ph1", "ph2", "ph3", "ph4", "ph5"];
+
+  // Узкие запросы сохраняют тематичность, а рандом будет внутри пула
   const queries = [
+    "Oxford Street London",
     "Oxford Street London shopping",
     "Regent Street London lights",
+    "Carnaby Street London",
     "Soho London street",
-    "London street fashion",
-    "London city night street",
-    "London architecture street",
+    "London shopping street",
   ];
 
-  // Берём по 1 фото на каждый запрос (так тематичность выше, чем 6 фоток по одному запросу)
-  const photoPromises = queries.map((q) => fetchPexelsPhotos(q, 1).catch(() => []));
-  const results = await Promise.all(photoPromises);
+  // Для разнообразия: берём большие пулы по 2–3 запросам, а не по 6 (так меньше запросов к API)
+  shuffleInPlace(queries);
+  const chosenQueries = queries.slice(0, 3);
 
-  const photos = results.flat().slice(0, 6);
+  const pools = await Promise.all(
+    chosenQueries.map((q) => fetchPexelsPool(q, 70).catch(() => []))
+  );
 
-  // fallback если Pexels вернул меньше
-  if (photos.length < 6) {
-    const extra = await fetchPexelsPhotos("London shopping street", 6 - photos.length);
-    photos.push(...extra);
+  // Склеиваем, убираем дубли по id
+  const byId = new Map();
+  for (const p of pools.flat()) {
+    if (p?.id != null && !byId.has(p.id)) byId.set(p.id, p);
   }
 
-  const imgIds = ["ph0", "ph1", "ph2", "ph3", "ph4", "ph5"];
+  let all = Array.from(byId.values());
+
+  // Если вдруг мало — добьём общим запросом
+  if (all.length < 20) {
+    const extra = await fetchPexelsPool("London street", 80).catch(() => []);
+    for (const p of extra) {
+      if (p?.id != null && !byId.has(p.id)) byId.set(p.id, p);
+    }
+    all = Array.from(byId.values());
+  }
+
+  // Берём случайные 6
+  shuffleInPlace(all);
+  const chosen = all.slice(0, imgIds.length);
 
   imgIds.forEach((id, i) => {
     const img = document.getElementById(id);
-    const p = photos[i];
-    // Pexels возвращает несколько размеров; large2x обычно идеально
+    const p = chosen[i];
     const src =
       p?.src?.large2x ||
       p?.src?.large ||
       p?.src?.landscape ||
       p?.src?.original;
 
-    if (src) setImgSafe(img, src);
+    if (src) {
+      // Подстрахуемся от кеша картинок браузером: добавим параметр v=
+      const withBust = src + (src.includes("?") ? "&" : "?") + "v=" + Date.now();
+      setImgSafe(img, withBust);
+    }
   });
 }
-
 // Запускаем после загрузки DOM
 document.addEventListener("DOMContentLoaded", () => {
   fillGallery().catch((err) => {
