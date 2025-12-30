@@ -415,7 +415,7 @@
   </div>
 
   <script>
-     window.__PEX_K__ = "__PEX_K__";
+     window.__PEX_KK__ = "__PEX_K__";
     // reveal + stagger
     (() => {
       const revealEls = document.querySelectorAll('[data-reveal]');
@@ -460,7 +460,7 @@
     })();
 
     async function fetchPexelsPhotos(query, count) {
-  const key = decodePexKey(window.__PEX_K__);
+  const key = decodePexKey(window.__PEX_KK__);
   if (!key) throw new Error("Pex key is missing (not injected).");
 
   const url = new URL("https://api.pexels.com/v1/search");
@@ -547,7 +547,7 @@ document.addEventListener("DOMContentLoaded", () => {
   return obf.slice(0, -2) + b + a; // swap back
 }
 
-const PEX_KEY = decodePexKey(window.__PEX_K__);
+const PEX_KEY = decodePexKey(window.__PEX_KK__);
   </script>
 </body>
 </html>
