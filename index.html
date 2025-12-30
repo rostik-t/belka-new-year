@@ -459,9 +459,6 @@
       }, { passive: true });
     })();
 
-    async function fetchPexelsPhotos(query, count) {
-  const key = decodePexKey(window.__PEX_KK__);
-  if (!key) throw new Error("Pex key is missing (not injected).");
       
 function randInt(min, maxInclusive) {
   return Math.floor(Math.random() * (maxInclusive - min + 1)) + min;
@@ -577,7 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-    function decodePexKey(obf) {
+function decodePexKey(obf) {
   const suffix = "._X";
   if (!obf || typeof obf !== "string") return "";
   if (obf.endsWith(suffix)) obf = obf.slice(0, -suffix.length);
@@ -586,8 +583,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const b = obf[obf.length - 1];
   return obf.slice(0, -2) + b + a; // swap back
 }
-
-const PEX_KEY = decodePexKey(window.__PEX_KK__);
-  </script>
+</script>
 </body>
 </html>
