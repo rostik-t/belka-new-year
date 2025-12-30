@@ -355,41 +355,40 @@
       <div class="hero reveal" data-reveal>
         <div class="stagger" data-stagger>
           <h2>Лондон ждёт ✨</h2>
-          <p class="subtitle">Пара кадров, чтобы настроение включилось прямо сейчас.</p>
+          <p class="subtitle">Несколько кадров для настроения.</p>
         </div>
 
         <div class="gallery" style="margin-top:14px; position:relative;">
-          <!-- Unsplash Source (загружает фото по ключевым словам) -->
-          <figure class="ph big reveal in">
-            <img alt="London at night" src="https://source.unsplash.com/1600x900/?london,night,street" />
-            <figcaption class="cap">Лондон. Вечер. Начинаем красиво.</figcaption>
-          </figure>
+  <figure class="ph big">
+    <img id="ph0" alt="London / Oxford Street" />
+    <figcaption class="cap">Лондон ждет. Oxford Street зовёт.</figcaption>
+  </figure>
 
-          <figure class="ph half">
-            <img alt="Oxford Street" src="https://source.unsplash.com/1200x900/?oxford-street,london" />
-            <figcaption class="cap">Oxford Street — витрины зовут.</figcaption>
-          </figure>
+  <figure class="ph half">
+    <img id="ph1" alt="Oxford Street London" />
+    <figcaption class="cap">Пора на шоппинг?</figcaption>
+  </figure>
 
-          <figure class="ph half">
-            <img alt="Regent Street lights" src="https://source.unsplash.com/1200x900/?regent-street,london,lights" />
-            <figcaption class="cap">Огни, настроение, и «ну всё, я хочу это!»</figcaption>
-          </figure>
+  <figure class="ph half">
+    <img id="ph2" alt="Regent / Soho vibes" />
+    <figcaption class="cap">Вайб большого города</figcaption>
+  </figure>
 
-          <figure class="ph third">
-            <img alt="London shopping" src="https://source.unsplash.com/900x900/?london,shopping" />
-            <figcaption class="cap">Шоппинг-вайб.</figcaption>
-          </figure>
+  <figure class="ph third">
+    <img id="ph3" alt="London shopping vibe" />
+    <figcaption class="cap">Ммм, хочу-хочу</figcaption>
+  </figure>
 
-          <figure class="ph third">
-            <img alt="Soho London" src="https://source.unsplash.com/900x900/?soho,london" />
-            <figcaption class="cap">Soho — просто потому что красиво.</figcaption>
-          </figure>
+  <figure class="ph third">
+    <img id="ph4" alt="London street" />
+    <figcaption class="cap">Ещё один поворот и ещё один “вау”.</figcaption>
+  </figure>
 
-          <figure class="ph third">
-            <img alt="Carnaby Street" src="https://source.unsplash.com/900x900/?carnaby-street,london" />
-            <figcaption class="cap">Carnaby — за атмосферой.</figcaption>
-          </figure>
-        </div>
+  <figure class="ph third">
+    <img id="ph5" alt="London architecture" />
+    <figcaption class="cap">Похоже на Ашдод?</figcaption>
+  </figure>
+</div>
 
         <div class="footer">
           Подсказка: можно листать — каждая секция как “страница”.
@@ -459,6 +458,84 @@
         });
       }, { passive: true });
     })();
+
+    async function fetchPexelsPhotos(query, count) {
+  const key = decodePexKey(window.__PEX_K__);
+  if (!key) throw new Error("Pex key is missing (not injected).");
+
+  const url = new URL("https://api.pexels.com/v1/search");
+  url.searchParams.set("query", query);
+  url.searchParams.set("per_page", String(Math.min(count, 15)));
+  url.searchParams.set("orientation", "landscape"); // чтобы фотки были горизонтальные
+  url.searchParams.set("size", "large");
+
+  const res = await fetch(url.toString(), {
+    headers: { Authorization: key },
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Pexels API error: ${res.status} ${res.statusText} ${text}`);
+  }
+
+  const data = await res.json();
+  return (data.photos ?? []).slice(0, count);
+}
+
+function setImgSafe(img, src) {
+  if (!img) return;
+  img.loading = "lazy";
+  img.decoding = "async";
+  img.referrerPolicy = "no-referrer"; // на всякий случай
+  img.src = src;
+}
+
+async function fillGallery() {
+  // Можно менять запросы — они реально влияют на тематичность
+  const queries = [
+    "Oxford Street London shopping",
+    "Regent Street London lights",
+    "Soho London street",
+    "London street fashion",
+    "London city night street",
+    "London architecture street",
+  ];
+
+  // Берём по 1 фото на каждый запрос (так тематичность выше, чем 6 фоток по одному запросу)
+  const photoPromises = queries.map((q) => fetchPexelsPhotos(q, 1).catch(() => []));
+  const results = await Promise.all(photoPromises);
+
+  const photos = results.flat().slice(0, 6);
+
+  // fallback если Pexels вернул меньше
+  if (photos.length < 6) {
+    const extra = await fetchPexelsPhotos("London shopping street", 6 - photos.length);
+    photos.push(...extra);
+  }
+
+  const imgIds = ["ph0", "ph1", "ph2", "ph3", "ph4", "ph5"];
+
+  imgIds.forEach((id, i) => {
+    const img = document.getElementById(id);
+    const p = photos[i];
+    // Pexels возвращает несколько размеров; large2x обычно идеально
+    const src =
+      p?.src?.large2x ||
+      p?.src?.large ||
+      p?.src?.landscape ||
+      p?.src?.original;
+
+    if (src) setImgSafe(img, src);
+  });
+}
+
+// Запускаем после загрузки DOM
+document.addEventListener("DOMContentLoaded", () => {
+  fillGallery().catch((err) => {
+    console.error(err);
+    // Если хочешь — тут можно показать текст "Не удалось загрузить фото"
+  });
+});
 
     function decodePexKey(obf) {
   const suffix = "._X";
