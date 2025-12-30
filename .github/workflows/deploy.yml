@@ -1,0 +1,51 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject obfuscated Pex API key into index.html (safe)
+        run: |
+          python - << 'PY'
+          import os
+          key = os.environ["PEX_K"]
+          with open("index.html", "r", encoding="utf-8") as f:
+            html = f.read()
+          html = html.replace("__PEX_K__", key)
+          with open("index.html", "w", encoding="utf-8") as f:
+            f.write(html)
+          PY
+        env:
+          PEX_K: ${{ secrets.PEX_K }}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
