@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Подарок для Белочки</title>
+  <meta name="description" content="Новогодний подарок для Юлианы (Белочки): £200 на Oxford Street и окрестностях + сопровождение мужа и минимум 5 «вау!»" />
+
+  <style>
+    :root{
+      --bg1:#0b1020;
+      --bg2:#1a0b2e;
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.72);
+      --card: rgba(255,255,255,.08);
+      --radius: 22px;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --a1:#ffcc66;
+      --a2:#ff5fa2;
+      --a3:#7c5cff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, rgba(124,92,255,.35), transparent 60%),
+        radial-gradient(1000px 700px at 80% 30%, rgba(255,95,162,.22), transparent 60%),
+        radial-gradient(900px 600px at 50% 90%, rgba(255,204,102,.18), transparent 60%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+    }
+
+    [hidden]{ display:none !important; }
+
+    .aurora{
+      position:fixed;
+      inset:-20vh -20vw;
+      pointer-events:none;
+      background:
+        radial-gradient(700px 380px at 15% 15%, rgba(255,204,102,.18), transparent 60%),
+        radial-gradient(760px 420px at 85% 30%, rgba(255,95,162,.16), transparent 60%),
+        radial-gradient(900px 520px at 55% 90%, rgba(124,92,255,.16), transparent 60%);
+      filter: blur(10px);
+      opacity:.9;
+      transform: translate3d(0,0,0);
+      will-change: transform;
+    }
+
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 16px 56px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 18px 6px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      background: linear-gradient(180deg, rgba(11,16,32,.55), rgba(11,16,32,.0));
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.2);
+      font-size: 14px;
+      color: var(--muted);
+      white-space:nowrap;
+    }
+
+    .spark{
+      width:10px;height:10px;border-radius:50%;
+      background: linear-gradient(135deg, var(--a1), var(--a2));
+      box-shadow: 0 0 0 6px rgba(255,204,102,.12);
+    }
+
+    /* “страницы” */
+    body { scroll-snap-type: y mandatory; }
+    .page{
+      min-height: 100svh;
+      display:flex;
+      align-items:center;
+      padding: 22px 0;
+      scroll-snap-align: start;
+    }
+
+    .hero{
+      position:relative;
+      padding: 26px 18px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      width:100%;
+    }
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(600px 300px at 10% 10%, rgba(255,204,102,.22), transparent 60%),
+        radial-gradient(600px 300px at 90% 30%, rgba(255,95,162,.18), transparent 60%),
+        radial-gradient(700px 350px at 50% 100%, rgba(124,92,255,.18), transparent 60%);
+      pointer-events:none;
+      opacity:.9;
+    }
+
+    h1{
+      margin: 0 0 10px;
+      font-size: clamp(28px, 3.8vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      position:relative;
+    }
+    h2{
+      margin:0 0 8px;
+      font-size: clamp(18px, 2.5vw, 24px);
+      letter-spacing: -0.01em;
+      position:relative;
+    }
+    .subtitle{
+      margin:0 0 14px;
+      font-size: clamp(16px, 2.2vw, 18px);
+      color: var(--muted);
+      line-height: 1.55;
+      position:relative;
+    }
+
+    .grid{
+      position:relative;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+      align-items:stretch;
+    }
+    @media (max-width: 860px){
+      .grid{grid-template-columns:1fr; gap:14px;}
+    }
+
+    .card{
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      padding: 16px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+
+    .highlight{
+      display:inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: rgba(255,204,102,.12);
+      border: 1px solid rgba(255,204,102,.25);
+      color: rgba(255,255,255,.90);
+      font-weight: 800;
+      letter-spacing: .01em;
+    }
+
+    .list{
+      display:grid;
+      gap:10px;
+    }
+    .item{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      padding: 12px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+    }
+    .ico{
+      width:40px;height:40px;border-radius:14px;
+      display:grid;place-items:center;
+      background: linear-gradient(135deg, rgba(255,204,102,.22), rgba(255,95,162,.20));
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 10px 26px rgba(0,0,0,.20);
+      flex:0 0 auto;
+    }
+    .item p{margin:0; color: var(--muted); line-height:1.55; font-size:15px;}
+    .item strong{color: rgba(255,255,255,.92);}
+
+    /* Галерея */
+    .gallery{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+      position:relative;
+    }
+    .ph{
+      position:relative;
+      border-radius: 18px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.25);
+      box-shadow: 0 12px 30px rgba(0,0,0,.20);
+      min-height: 180px;
+    }
+    .ph img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+      transform: scale(1.02);
+      filter: saturate(1.05);
+    }
+    .ph::after{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.0) 55%);
+      pointer-events:none;
+    }
+    .cap{
+      position:absolute;
+      left:12px; right:12px; bottom:10px;
+      font-size: 13px;
+      color: rgba(255,255,255,.88);
+      text-shadow: 0 10px 25px rgba(0,0,0,.55);
+    }
+    .ph.big{ grid-column: span 12; min-height: 260px; }
+    .ph.half{ grid-column: span 6; }
+    .ph.third{ grid-column: span 4; }
+    @media (max-width: 860px){
+      .ph.big, .ph.half, .ph.third { grid-column: span 12; }
+      .ph{ min-height: 210px; }
+    }
+
+    .footer{
+      text-align:center;
+      color: rgba(255,255,255,.72);
+      font-size: 14px;
+      margin-top: 12px;
+      position:relative;
+    }
+    .sign{
+      margin-top: 6px;
+      font-size: 16px;
+      color: rgba(255,255,255,.90);
+      position:relative;
+    }
+
+    /* Анимации появления */
+    .reveal{
+      opacity: 0;
+      transform: translateY(34px) scale(.975);
+      filter: blur(10px);
+      transition:
+        opacity .85s ease,
+        transform .85s cubic-bezier(.2,.9,.2,1),
+        filter .85s ease;
+      will-change: opacity, transform, filter;
+    }
+    .reveal.in{
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+    .stagger > *{
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .stagger.in > *{
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .stagger.in > *:nth-child(1){transition-delay: .05s}
+    .stagger.in > *:nth-child(2){transition-delay: .12s}
+    .stagger.in > *:nth-child(3){transition-delay: .19s}
+    .stagger.in > *:nth-child(4){transition-delay: .26s}
+    .stagger.in > *:nth-child(5){transition-delay: .33s}
+  </style>
+</head>
+
+<body>
+  <div class="aurora" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="topbar">
+      <div class="badge"><span class="spark"></span>Подарок для Белочки</div>
+      <div class="badge">🛍️ London Shopping ✨</div>
+    </div>
+
+    <!-- Страница 1 -->
+    <section class="page">
+      <div class="hero reveal" data-reveal>
+        <div class="grid">
+          <div class="card stagger" data-stagger>
+            <h1><br/>Любимая Белочка! 🐿️</h1>
+            <p class="subtitle">
+              У меня для тебя подарок, который пахнет Лондоном, витринами и «ну ещё один магазинчик и всё!» 😄
+            </p>
+
+            <div class="list">
+              <div class="item">
+                <div class="ico">💷</div>
+                <p><strong>£200</strong> — на Oxford Street и в окрестностях.</p>
+              </div>
+
+              <div class="item">
+                <div class="ico">🤝</div>
+                <p><strong>Сопровождение мужа</strong> во время шоппинга (да, добровольно).</p>
+              </div>
+
+              <div class="item">
+                <div class="ico">🔥</div>
+                <p><strong>Минимум 5</strong> честных восклицаний: <strong>«Вау, супер, тебе это очень идёт!»</strong></p>
+              </div>
+            </div>
+
+            <p class="subtitle" style="margin-top:12px">
+              Правило дня: ты выбираешь — я восхищаюсь. 🤍
+            </p>
+          </div>
+
+          <div class="card stagger" data-stagger>
+            <h2>Маршрут мечты</h2>
+            <p class="subtitle" style="margin-bottom:10px">
+              Oxford Street → Regent Street → Carnaby → Soho (и всё, что захочешь по пути).
+            </p>
+            <div class="item">
+              <div class="ico">🕒</div>
+              <p>Никакой спешки — только удовольствие, красивые вещи и спокойное настроение.</p>
+            </div>
+            <div style="height:10px"></div>
+            <div class="item">
+              <div class="ico">🧾</div>
+              <p>Муж в роли восторженного зрителя и генератора искренних «вау».</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Страница 2: фотогалерея -->
+    <section class="page">
+      <div class="hero reveal" data-reveal>
+        <div class="stagger" data-stagger>
+          <h2>Лондон ждёт ✨</h2>
+          <p class="subtitle">Пара кадров, чтобы настроение включилось прямо сейчас.</p>
+        </div>
+
+        <div class="gallery" style="margin-top:14px; position:relative;">
+          <!-- Unsplash Source (загружает фото по ключевым словам) -->
+          <figure class="ph big reveal in">
+            <img alt="London at night" src="https://source.unsplash.com/1600x900/?london,night,street" />
+            <figcaption class="cap">Лондон. Вечер. Начинаем красиво.</figcaption>
+          </figure>
+
+          <figure class="ph half">
+            <img alt="Oxford Street" src="https://source.unsplash.com/1200x900/?oxford-street,london" />
+            <figcaption class="cap">Oxford Street — витрины зовут.</figcaption>
+          </figure>
+
+          <figure class="ph half">
+            <img alt="Regent Street lights" src="https://source.unsplash.com/1200x900/?regent-street,london,lights" />
+            <figcaption class="cap">Огни, настроение, и «ну всё, я хочу это!»</figcaption>
+          </figure>
+
+          <figure class="ph third">
+            <img alt="London shopping" src="https://source.unsplash.com/900x900/?london,shopping" />
+            <figcaption class="cap">Шоппинг-вайб.</figcaption>
+          </figure>
+
+          <figure class="ph third">
+            <img alt="Soho London" src="https://source.unsplash.com/900x900/?soho,london" />
+            <figcaption class="cap">Soho — просто потому что красиво.</figcaption>
+          </figure>
+
+          <figure class="ph third">
+            <img alt="Carnaby Street" src="https://source.unsplash.com/900x900/?carnaby-street,london" />
+            <figcaption class="cap">Carnaby — за атмосферой.</figcaption>
+          </figure>
+        </div>
+
+        <div class="footer">
+          Подсказка: можно листать — каждая секция как “страница”.
+        </div>
+      </div>
+    </section>
+
+    <!-- Страница 3 -->
+    <section class="page">
+      <div class="hero reveal" data-reveal>
+        <div class="stagger" data-stagger style="text-align:center">
+          <h2>Белочка, это твой день 🐿️💛</h2>
+          <p class="subtitle" style="max-width:62ch; margin: 0 auto;">
+            £200 — на радость. Муж — в роли поддержки, носильщика пакетов и генератора комплиментов.
+            Обещаю: минимум пять “вау” — и все по делу.
+          </p>
+
+          <div class="card" style="display:inline-block; margin-top:16px">
+            <div class="sign" style="margin:0">Твой Ёжик. 🦔</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // reveal + stagger
+    (() => {
+      const revealEls = document.querySelectorAll('[data-reveal]');
+      const staggerEls = document.querySelectorAll('[data-stagger]');
+
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            const st = e.target.querySelector?.('[data-stagger]');
+            if (st) st.classList.add('in');
+            io.unobserve(e.target);
+          }
+        }
+      }, { threshold: 0.01, rootMargin: '0px 0px -20% 0px' });
+
+      revealEls.forEach(el => io.observe(el));
+
+      const ioSt = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            ioSt.unobserve(e.target);
+          }
+        }
+      }, { threshold: 0.2 });
+
+      staggerEls.forEach(el => ioSt.observe(el));
+
+      // parallax
+      const aurora = document.querySelector('.aurora');
+      let raf = 0;
+      window.addEventListener('scroll', () => {
+        if (!aurora) return;
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          const y = window.scrollY || 0;
+          aurora.style.transform = `translate3d(0, ${y * 0.06}px, 0)`;
+          raf = 0;
+        });
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>
