@@ -416,6 +416,7 @@
   </div>
 
   <script>
+     window.__PEX_K__ = "__PEX_K__";
     // reveal + stagger
     (() => {
       const revealEls = document.querySelectorAll('[data-reveal]');
@@ -458,6 +459,18 @@
         });
       }, { passive: true });
     })();
+
+    function decodePexKey(obf) {
+  const suffix = "._X";
+  if (!obf || typeof obf !== "string") return "";
+  if (obf.endsWith(suffix)) obf = obf.slice(0, -suffix.length);
+  if (obf.length < 2) return obf;
+  const a = obf[obf.length - 2];
+  const b = obf[obf.length - 1];
+  return obf.slice(0, -2) + b + a; // swap back
+}
+
+const PEX_KEY = decodePexKey(window.__PEX_K__);
   </script>
 </body>
 </html>
