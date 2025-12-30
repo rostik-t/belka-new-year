@@ -473,6 +473,9 @@ function shuffleInPlace(arr) {
 }
 
 async function fetchPexelsPool(query, poolSize = 60) {
+    const key = decodePexelsKey(window.__PEX_KK__);
+  if (!key) throw new Error("Pexels key is missing (not injected).");
+  
   // page тоже рандомизируем (обычно 1..10 достаточно)
   const page = randInt(1, 8);
 
